@@ -89,7 +89,7 @@
         ;-----------------------------------
         response-config {:classifier {:match ["response" "C" "Y"]
                                       :fragments ["response" [:a :b :c] [:a :c :y]]}
-                         :schema-constraints {:on-other ["schedn.core-test/approval-AND-x"]}
+                         :schema-constraints {:on-other ['schedn.core-test/approval-AND-x]}
                          :templates {:YYY {[[:a :b :c] :mandatory] s/Str
                                            [[:a :c :y] :mandatory] s/Str
                                            [[:z :y] :mandatory] (s/enum "approval" "decline" "referral" "error")

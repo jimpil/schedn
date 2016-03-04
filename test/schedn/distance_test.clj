@@ -1,4 +1,4 @@
-(ns shedn.distance-test
+(ns schedn.distance-test
   (:use clojure.test
         schedn.distance))
 
