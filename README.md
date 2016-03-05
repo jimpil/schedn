@@ -17,7 +17,7 @@ First of all Schema is great! It allows one to specify a 'validator' which looks
 
 ```
 
-OK, so what do we have here? First of all, this is NOT all data. It's actually a mixture of code + data. Secondly, there is quite a bit of clutter and room for error when writing deeply nested Schemas. In fact, the above Schema shown has a semantic error.  It marks all keys under :card as optional, but :card itself is mandatory! This means that in theory we would allow a completely empty :card entry! The same sort of thing could have happened for :cardholder entry. In general, when one writes a nested Schema by hand, he/she needs to manually figure out and keep track of which keys **cannot** be optional (because there is mandatory child somewhere downstream). There is clearly room for error in this exercise. Would it be great to be able to write something like this instead?
+OK, so what do we have here? First of all, this is NOT all data. It's actually a mixture of code + data. Secondly, there is quite a bit of clutter and room for error when writing deeply nested Schemas. In fact, the above Schema shown has a semantic error.  It marks all keys under :card as optional, but :card itself is mandatory! This means that in theory we would allow a :card entry with a completely empty map! The same sort of thing could have happened for :cardholder entry. In general, when one writes a nested Schema by hand, he/she needs to manually figure out and keep track of which keys **cannot** be optional (because there is mandatory child somewhere downstream). There is clearly room for error in this exercise. Would it not be great to be able to write something like this instead?
  
 ```clj
  (def Transaction {[[:cardholder :last-name] :mandatory] 'schema.core/Str
@@ -84,14 +84,25 @@ This basically means that the refinements listed need access to the thing we're 
 ### on-other
 By the same token, this means  that the refinements listed need access to something external (e.g. some other map). Hence they must expect 2 arguments  - both self AND the-other.
 
+### with-dependent-validation
+`with-dependent-validation` is a simple macro which abstracts away the execution flow when validating across 2 things. Let's look at a concrete example to make things clearer. Suppose you have some sort of request arriving from the outside world, and you want to produce a response for it. Obviously, you also want to validate the request as it's coming in, and the response as it's going out. Now, also suppose that validation of the response needs to inspect the request (e.g. if there is a credit card number in the request we may want to produce a response which has a mandatory :luhn-pass? key). So generally, whenever you have 2 things (X & Y) to validate, and validating the Y somehow depends on X, you can use the following code: 
+
+```clj
+(with-dependent-validation X x-config y-config & body-producing-Y)
+```
+
+If an expression like the above returns an actual value, you can be sure that the X passed validation specified in x-config, and that the Y returned passed validation specified in y-config.  
+
+In case it's not clear from the above, if the validation-config for the response depends on the request, it must specify schema-constraints `:on-other`, and the 'other' to be used is the request. So, in this case, any functions specified under `:on-other` should take the response as the 1st arg (self) and the request as the 2nd (other).
+
 ## Caveats
+
 
 ## Limitations
 Only for Clojure maps.
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 Dimitrios Piliouras
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the Eclipse Public License, the same as Clojure.
