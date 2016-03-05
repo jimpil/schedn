@@ -72,18 +72,22 @@ We mentioned earlier the notion of a 'validation-configuration'. This is basical
 
 ```
 
-Let's examine the classifier entry. The :match key corresponds to what the incoming message's (the message we're currently validating) identifier should be. The identifier is produced by extracting all the path-vectors found in :fragments from the incoming message. An optional prefix is supported as well (i.e. 'request' above). In other words, if the thing we're validating doesn't have value 'sale' under [:a :b :c] AND 'ssl' under [:a :c :x], identification will fail, and no further validation will occur. This feature is completely optional, and can be turned off by simply not supplying a :classifier entry.
+Let's examine the `classifier` entry. The :match key corresponds to what the incoming message's (the message we're currently validating) identifier should be. The identifier is produced by extracting all the path-vectors found in :fragments from the incoming message. An optional prefix is supported as well (i.e. 'request' above). In other words, if the thing we're validating doesn't have value 'sale' under [:a :b :c] AND 'ssl' under [:a :c :x], identification will fail, and no further validation will occur. This feature is completely optional, and can be turned off by simply not supplying a :classifier entry.
 
 
+The `schema-constraints` entry is a bit more involved. The constarints specified in its children apply to the top level schema as produce by merging all the templates and calling `template->schema` on it. It supports 2 keys and 2 keys only. These are **:on-self** & **:on-other** and they can coexist. They both have the same format but slightly different semantics. The format is essentially a vector of namespaced symbols. These symbols must resolve to functions which accept 1 argument if they are under `:on-self`, and 2 arguments if they are under `:on-other`. The master schema is refined sequentially for all resolved functions via `schema.core/constrained`.
 
 
+### on-self
+This basically means that the refinements listed need access to the thing we're currently validating (hence they must expect 1 argument). 
 
-
+### on-other
+By the same token, this means  that the refinements listed need access to something external (e.g. some other map). Hence they must expect 2 arguments  - both self AND the-other.
 
 ## Caveats
 
 ## Limitations
-Currently works only with/against maps.
+Only for Clojure maps.
 
 ## License
 
