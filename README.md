@@ -98,6 +98,13 @@ In case it's not clear from the above, if the validation-config for the response
 `validate-data-against-schema` is a drop-in replacement for `schema.core/validate`. The only reason to use it over `schema.core/validate`, would be because you want to integrate certain coercions (see `*default-coercions*` dynamic Var), and/or you want to have a say in cases where there is more stuff in the map than what has been defined in the schema (by default schema doesn't allow extra stuff!). The way you do that is by supplying your own `react-for-extra!` argument (a function) to `validate-data-against-schema`. The default function for this does a string similarity test across the keys and tries to suggest potential hints (based on edit-distance). For example, if you schema specifies a :port key and you accidentally provide a :pport one, you will get a `println` saying *"Did you mean [:port]?"*
 
 
+## Worth noting
+
+As mentioned in the 'Motivation' section, the schedn interpreter will infer the presence indicator of any non-leaf keys, by using all the mandatory paths as a guard. This essentially means that you cannot have a leaf key specified as :mandatory, while some of its parents are declared :optional. Similarly, you cannot have some parent key, whose children are all :optional, declared as :mandatory. In other words, mandatory parents must have at least 1 mandatory child. 
+
+Even though, the things you can't have are valid Clojure data-structures, in my experience they don't make much sense (semantically speaking). In what possible scenario would you demand some inner key to be present, when its own parent is not required? This essentially means that the child itself is really optional. By the same token, in what possible scenario would you demand a parent key to be always present, when all of its children are optional? Wouldn't that mean that the parent is itself really optional? Or to put it differently...What does it mean to provide a key with no data (from the client's perspective)? Well, semantically this means that the key is not actually needed, as it provides no information whatsoever! To that end, `schedn` simply prohibits these two confusing cases. Admittedly, this *could* be a major caveat, depending on the domain applied. In my experience, it's a bad idea to allow for semantic confusion, and it's also quite hard to get this right by hand, in deeply nested maps. So, `schedn` automates this work - you supply only the leaf presence-indicators and the interpreter does the rest.
+  
+
 ## Limitations
 Only for Clojure maps.
 
