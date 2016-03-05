@@ -112,6 +112,10 @@
     (testing "simple conditional-presence-on-other -- fail"
       (is (thrown? ExceptionInfo (s/validate response-schema-using-bad-request good-response))))
 
+    (testing "`with-dependent-validation` macro"
+      (is (with-dependent-validation good-request request-config response-config good-response))
+      (is (thrown? ExceptionInfo (with-dependent-validation bad-request request-config response-config good-response))))
+
     (is (= "request-C-Y" (identify-request good-request)))    ;; correctly identified request
     (is (= "response-C-Y" (identify-response good-response))) ;; correctly identified response
     ))
