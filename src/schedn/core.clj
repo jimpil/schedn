@@ -78,7 +78,9 @@
     (reduce (fn [m [path status :as template-entry]]
               (assoc-in m
                         (make-schema-path path (map first mandatory) status)
-                        (get template template-entry)))
+                        (let [leaf-schema (get template template-entry)]
+                          (cond-> leaf-schema
+                                  (symbol? leaf-schema) (-> resolve var-get)))))
             {}
             (keys template)))
   )
