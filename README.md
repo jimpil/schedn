@@ -43,8 +43,7 @@ We now have an opportunity to correctly generate all the keys prior to the leaf 
 3. By **leaf-validator** we are going to refer to a symbol which must resolve to a schema (to be used against a leaf value)
 4. By **validation-configuration** we are going to refer to a map which, at the very least, contains a `:templates` key, which is a map whose values are all schedn-templates
 
-
-For example, the following map is a **schema-template**:
+For example, the following map is a **schedn-template**:
 
 ```clj
 {[[:a :b] :mandatory] 'my.awesome.schemas/UUID-str
@@ -95,7 +94,8 @@ If an expression like the above returns an actual value, you can be sure that th
 
 In case it's not clear from the above, if the validation-config for the response depends on the request, it must specify schema-constraints `:on-other`, and the 'other' to be used is the request. So, in this case, any functions specified under `:on-other` should take the response as the 1st arg (self) and the request as the 2nd (other).
 
-## Caveats
+### validate-data-against-schema
+`validate-data-against-schema` is a drop-in replacement for `schema.core/validate`. The only reason to use it over `schema.core/validate`, would be because you want to integrate certain coercions (see `*default-coercions*` dynamic Var), and/or you want to have a say in cases where there is more stuff in the map than what has been defined in the schema (by default schema doesn't allow extra stuff!). The way you do that is by supplying your own `react-for-extra!` argument (a function) to `validate-data-against-schema`. The default function for this does a string similarity test across the keys and tries to suggest potential hints (based on edit-distance). For example, if you schema specifies a :port key and you accidentally provide a :pport one, you will get a `println` saying *"Did you mean [:port]?"*
 
 
 ## Limitations
