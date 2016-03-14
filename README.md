@@ -56,7 +56,7 @@ For example, the following map is a **schedn-template**:
 
 Usage is mainly centered around a single function `schedn.core/template->schema`. As the name suggests, you can call this on a schedn-template and you will get back a Schema. There are a couple of helpers to manipulate the template prior to producing the schema too (e.g. `remove-template-entries` & `override-template-statuses`). OK, so that's simple enough. Let's now see what more we can do.    
    
-We mentioned earlier the notion of a 'validation-configuration'. This is basically a collection of templates. The reason for even using a validation-configuraiton over raw templates is to group the templates under a single entity, to facilitate the notion of **identification-comes-first**, and to offer an opportunity to refine (via `s/constrained`) the master schema that will be produced (by merging all the templates). Let's see a full example:
+We mentioned earlier the notion of a 'validation-configuration'. This is basically a collection of templates. The reason for even using a validation-configuration over raw templates is to group the templates under a single entity, to facilitate the notion of **identification-comes-first**, and to offer an opportunity to refine (via `s/constrained`) the master schema that will be produced (by merging all the templates). Let's see a full example:
 
 
 ```clj
