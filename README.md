@@ -38,7 +38,7 @@ We now have an opportunity to correctly generate all the keys prior to the leaf 
 
 `schedn` introduces 4 words to describe 4 very specific things:
 
-1. By **schedn-template** we are going to refer to the a map full of schedn-entries
+1. By **schedn-template** we are going to refer to a map full of schedn-entries
 2. By **schedn-entry** we are going to refer to a tuple of `[ [path-to-leaf presence-indicator] leaf-validator ]`
 3. By **leaf-validator** we are going to refer to a symbol which must resolve to a schema (to be used against a leaf value)
 4. By **validation-configuration** we are going to refer to a map which, at the very least, contains a `:templates` key, which is a map whose values are all schedn-templates

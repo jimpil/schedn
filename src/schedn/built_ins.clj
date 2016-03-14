@@ -1,5 +1,6 @@
 (ns schedn.built-ins
-  (:require [schema.core :as sch]))
+  (:require [schema.core :as sch]
+            [schedn.util :as ut]))
 
 ;; some ready-made schemas follow:
 
@@ -51,3 +52,6 @@
   "A function for creating schema predicate to test membership of some item against some set <s>."
   [s]
   (sch/pred (partial contains? s) 'is-contained?))
+
+(def RFC-3339-date-str
+  (sch/pred ut/parse-rfc-3339-date-str 'rfc-3339?))

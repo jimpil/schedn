@@ -2,7 +2,8 @@
   (:require [clojure.core.incubator :refer [dissoc-in]]
             [schema
              [core :as s]
-             [utils :as sut]]))
+             [utils :as sut]])
+  (:import (java.text SimpleDateFormat)))
 
 ;; KITCHEN SINK
 ;; ============
@@ -91,5 +92,14 @@
                                         (fn [self]
                                           (f self other)))
                                       (map string->fn fns)))))))
+
+
+(def ^SimpleDateFormat rfc-3339-formatter
+  ;; http://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html#iso8601timezone
+  (SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ssXXX"))
+
+(defn parse-rfc-3339-date-str [^String s]
+  (when (.parse rfc-3339-formatter s)
+    true))
 
 
