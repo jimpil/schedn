@@ -200,19 +200,18 @@
          {expected :match
           ids :fragments
           :as id-info} (:classifier self-config)
-         id-constraint (when (and id-info
-                                  (contains? refinements :classifier))
+         id-constraint (when (and id-info (contains? refinements :classifier))
                          (fn classifier-match? [msg]
                            (= expected (ut/extract-identifiers ids msg))))
          constraints (when (contains? refinements :schema-constraints)
                        (ut/schema-constraints self-config the-other))
-         full-schema (template->schema full-template)
-         final-schema (cond-> full-schema
-                              (not-empty constraints) (ut/refine-schema constraints)
-                              id-constraint (id-conditional id-constraint))] ;; the ID condition should come first!
-     (cond-> final-schema
-             id-constraint (with-meta {:identify (partial ut/concat-identifiers ids)}))
-     )))
+         full-schema (template->schema full-template)]
+     (cond-> full-schema
+             (not-empty constraints) (ut/refine-schema constraints)
+             id-constraint (id-conditional id-constraint) ;; the ID condition should come first!
+             id-constraint (with-meta {:identify (partial ut/concat-identifiers ids)})))
+    )
+  )
 
 (defn schedn->schema-no-constraints
   "Same as `schedn->schema` but ignoring constraints (refinements)."
