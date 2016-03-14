@@ -73,7 +73,7 @@
   "Convert a schema template to an actual schema. A schema template is just like a schema (a map),
    but with `[[& key-names] :required/:mandatory]` for keys."
   [template]
-  (let [{optionals :optionals
+  (let [{optionals :optional
          mandatory :mandatory} (group-template-paths-according-to-presence template)]
     (reduce (fn [m [path status :as template-entry]]
               (assoc-in m
