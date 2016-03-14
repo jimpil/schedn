@@ -208,8 +208,8 @@
          full-schema (template->schema full-template)]
      (cond-> full-schema
              (not-empty constraints) (ut/refine-schema constraints)
-             id-constraint (id-conditional id-constraint) ;; the ID condition should come first!
-             id-constraint (with-meta {:identify (partial ut/concat-identifiers ids)})))
+             id-constraint (-> (id-conditional id-constraint)
+                               (with-meta {:identify (partial ut/concat-identifiers ids)})))) ;; the ID condition should come first!
     )
   )
 
