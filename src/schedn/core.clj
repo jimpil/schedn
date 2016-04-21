@@ -95,7 +95,7 @@
 (defn- unpack-erroneous-value [error]
   "Helper for extracting the actual value that failed out of ValidationError/NamedError objects."
   (condp instance? error
-    ValidationError (.value ^ValidationError error)
+    ValidationError {:error (sch-utils/validation-error-explain error)}
     NamedError (unpack-erroneous-value (.error ^NamedError error))
     error))
 
@@ -105,7 +105,9 @@
   ([data component-description react-for-extra! schema]
    (let [coerce-and-check (coe/coercer schema default-coercions-matcher)
          validation-outcome (coerce-and-check data)]
-     (if-let [error-container (sch-utils/error-val validation-outcome)]
+     (if-let [error-container (some-> validation-outcome
+                                      sch-utils/error-val
+                                      unpack-erroneous-value)]
        (let [disallowed-paths (find-disallowed-paths error-container)
              true-errors (ut/dissoc-paths error-container disallowed-paths)]
          (when (and react-for-extra! ;;just a precaution
@@ -118,8 +120,7 @@
                                :error (ut/fmap true-errors unpack-erroneous-value)}) ;;don't let schema specific Objects leak out of this namespace!
            ;;re-introduce the extra keys, after having 'affected the world'
            (reduce #(assoc-in %1 %2 (get-in data %2))
-                   ;;this 2nd call is guarranteed to succeed at this point
-                   (coerce-and-check (ut/dissoc-paths data disallowed-paths))
+                   (ut/dissoc-paths data disallowed-paths)
                    disallowed-paths)))
        validation-outcome)))
   ([data component-description schema] ;; this is the arity that should be used most of, if not all, the time
