@@ -92,11 +92,11 @@
        ut/extract-paths
        (filter #(= 'disallowed-key (get-in error-map %)))))
 
-(defn- unpack-erroneous-value [error]
+(defn- unpack-error [error]
   "Helper for extracting the actual value that failed out of ValidationError/NamedError objects."
   (condp instance? error
     ValidationError {:error (sch-utils/validation-error-explain error)}
-    NamedError (unpack-erroneous-value (.error ^NamedError error))
+    NamedError (unpack-error (.error ^NamedError error))
     error))
 
 (defn validate-data-against-schema
@@ -107,7 +107,7 @@
          validation-outcome (coerce-and-check data)]
      (if-let [error-container (some-> validation-outcome
                                       sch-utils/error-val
-                                      unpack-erroneous-value)]
+                                      unpack-error)]
        (let [disallowed-paths (find-disallowed-paths error-container)
              true-errors (ut/dissoc-paths error-container disallowed-paths)]
          (when (and react-for-extra! ;;just a precaution
@@ -117,7 +117,7 @@
            (sch-macros/error! (sch-utils/format* "[%s] :: Value does not match schema: %s" component-description (pr-str true-errors))
                               {:schema schema
                                :value data
-                               :error (ut/fmap true-errors unpack-erroneous-value)}) ;;don't let schema specific Objects leak out of this namespace!
+                               :error (ut/fmap true-errors unpack-error)}) ;;don't let schema specific Objects leak out of this namespace!
            ;;re-introduce the extra keys, after having 'affected the world'
            (reduce #(assoc-in %1 %2 (get-in data %2))
                    (ut/dissoc-paths data disallowed-paths)
